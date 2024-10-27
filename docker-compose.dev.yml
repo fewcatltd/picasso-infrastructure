@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: picasso-pg
+    image: postgres:15
+    environment:
+      POSTGRES_USER: picasso
+      POSTGRES_PASSWORD: picasso
+    volumes:
+      - ./.dev/postgresql:/var/lib/postgresql/data2
+    ports:
+      - "5432:5432"
+  cache:
+    container_name: picasso-redis
+    image: redis:6.2-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server
+    volumes:
+      - cache:/data
+  amqp:
+    container_name: picasso-rabbitmq
+    image: rabbitmq:3.9.9-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: picasso
+      RABBITMQ_DEFAULT_PASS: picasso
+    volumes:
+      - ./.dev/rabbitmq:/var/lib/rabbitmq
+
+  localstack:
+    container_name: picasso-localstack
+    image: localstack/localstack
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=us-east-1
+    ports:
+      - "4566:4566"
+    volumes:
+      - localstack_data:/var/lib/localstack
+
+volumes:
+  cache:
+    driver: local
+  localstack_data:
+    driver: local

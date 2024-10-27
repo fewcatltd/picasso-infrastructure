@@ -1,0 +1,5 @@
+tolerations:
+  - key: "observability"
+    operator: "Equal"
+    value: "true"
+    effect: "NoSchedule"
